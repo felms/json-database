@@ -1,2 +1,3 @@
-# json-database
-Praticas do Jetbrains Academy: Projeto JSON Database
+JSON Database
+
+Praticas do Jetbrains Academy: Projeto Database
