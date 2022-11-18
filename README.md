@@ -1,3 +1,3 @@
 JSON Database
 
-Praticas do Jetbrains Academy: Projeto Database
+Praticas do Jetbrains Academy: Projeto JSON Database
