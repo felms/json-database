@@ -1,47 +1,26 @@
 package server;
 
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Database {
 
-    private final String[] db;
+   private final Map<Integer, String> storage;
 
-    public Database() {
-        this.db = new String[100];
-        Arrays.fill(this.db, "");
-    }
+   public Database() {
+       this.storage = new HashMap<>();
+   }
 
-    public void set(int slot, String data) {
+   public String getRecord(int index) {
+       return this.storage.get(index);
+   }
 
-        if (slot > 100 || slot < 1) {
-            System.out.println("ERROR");
-            return;
-        }
+   public void insertRecord(int index, String value) {
+      this.storage.put(index, value);
+   }
 
-        this.db[slot - 1] = data;
+   public void deleteRecord(int index) {
+       this.storage.remove(index);
+   }
 
-        System.out.println("OK");
-    }
-
-    public void get(int slot) {
-
-        if (slot > 100 || slot < 1 || this.db[slot - 1].isBlank()) {
-            System.out.println("ERROR");
-            return;
-        }
-
-        System.out.println(this.db[slot - 1]);
-    }
-
-    public void delete(int slot) {
-
-        if (slot > 100 || slot < 1) {
-            System.out.println("ERROR");
-            return;
-        }
-
-        this.db[slot - 1] = "";
-
-        System.out.println("OK");
-    }
 }

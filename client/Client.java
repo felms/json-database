@@ -10,7 +10,7 @@ public class Client {
     private static final String SERVER_ADDRESS = "127.0.0.1";
     private static final int SERVER_PORT = 41220;
 
-    public void init() {
+    public void init(String requestType, int cellIndex, String valueToSave) {
 
         System.out.println("Client started!");
         try (
@@ -19,7 +19,7 @@ public class Client {
                 DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream())
         ) {
 
-            String message = "Give me a record # 13";
+            String message = String.format("%s %d %s", requestType, cellIndex, valueToSave);
             dataOutputStream.writeUTF(message);
             System.out.println("Sent: " + message);
 
