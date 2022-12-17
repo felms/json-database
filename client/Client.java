@@ -1,5 +1,8 @@
 package client;
 
+import com.google.gson.Gson;
+import controller.Request;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -10,7 +13,13 @@ public class Client {
     private static final String SERVER_ADDRESS = "127.0.0.1";
     private static final int SERVER_PORT = 41220;
 
-    public void init(String requestType, int cellIndex, String valueToSave) {
+    private final Request request;
+    public Client(String type, String key, String value) {
+
+        this.request = new Request(type, key, value);
+    }
+
+    public void init() {
 
         System.out.println("Client started!");
         try (
@@ -19,7 +28,7 @@ public class Client {
                 DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream())
         ) {
 
-            String message = String.format("%s %d %s", requestType, cellIndex, valueToSave);
+            String message = new Gson().toJson(request);
             dataOutputStream.writeUTF(message);
             System.out.println("Sent: " + message);
 

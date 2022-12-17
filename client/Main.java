@@ -8,11 +8,11 @@ public class Main {
     @Parameter(names = "-t")
     String requestType;
 
-    @Parameter(names = "-i")
-    int cellIndex;
+    @Parameter(names = "-k")
+    String key;
 
-    @Parameter(names = "-m")
-    public String valueToSave;
+    @Parameter(names = "-v")
+    public String value;
 
     public static void main(String[] args) {
 
@@ -22,9 +22,7 @@ public class Main {
                 .build()
                 .parse(args);
 
-        Client client = new Client();
-        client.init(main.requestType,
-                main.cellIndex,
-                main.valueToSave);
+        Client client = new Client(main.requestType, main.key, main.value);
+        client.init();
     }
 }

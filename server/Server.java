@@ -1,5 +1,9 @@
 package server;
 
+import com.google.gson.Gson;
+import controller.Request;
+import controller.Response;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -9,10 +13,8 @@ import java.net.Socket;
 public class Server {
 
     private Database database;
-    private static final int MIN_ID = 0;
-    private static final int MAX_ID = 1000;
-
     private static final int PORT = 41220;
+
 
     public void init() {
 
@@ -30,20 +32,18 @@ public class Server {
                 ) {
 
                     String message = dataInputStream.readUTF();
-                    String[] arguments = message.split("\\s+");
-                    String requestType = arguments[0];
+                    Request request = new Gson().fromJson(message, Request.class);
 
-                    if ("exit".equals(requestType)) {
-                        dataOutputStream.writeUTF("OK");
+                    if ("exit".equals(request.getType())) {
+                        Response response = new Response("OK");
+                        String responseMessage = new Gson().toJson(response);
+                        dataOutputStream.writeUTF(responseMessage);
                         break;
                     }
 
-                    int cellIndex = Integer.parseInt(arguments[1]);
-                    String valueToSave = message.split("\\d+")[1].trim();
-
-                    String response = execCommand(requestType, cellIndex, valueToSave);
-
-                    dataOutputStream.writeUTF(response);
+                    Response response = execCommand(request);
+                    String responseMessage = new Gson().toJson(response);
+                    dataOutputStream.writeUTF(responseMessage);
                 }
             }
 
@@ -52,30 +52,42 @@ public class Server {
         }
     }
 
-    private String execCommand(String command, int index, String value) {
+    private Response execCommand(Request request) {
 
-        if (index < MIN_ID || index > MAX_ID) {
-            return "ERROR";
-        }
+        Response response;
 
-        return switch (command) {
+        String requestType = request.getType();
+        String key = request.getKey();
+        String value = request.getValue();
+
+        switch (requestType) {
             case "set" -> {
-                this.database.insertRecord(index, value);
-                yield "OK";
+                this.database.insertRecord(key, value);
+                response = new Response("OK");
             }
 
             case "get" -> {
-                String response = this.database.getRecord(index);
-                yield response == null ? "ERROR" : response;
+                String record = database.getRecord(key);
+                if (record == null) {
+                    response = new Response("ERROR", "", "No such key");
+                } else {
+                    response = new Response("OK", record, "");
+                }
             }
 
             case "delete" -> {
-                this.database.deleteRecord(index);
-                yield "OK";
+                if (database.getRecord(key) == null) {
+                    response = new Response("ERROR", "", "No such key");
+                } else {
+                    database.deleteRecord(key);
+                    response = new Response("OK");
+                }
             }
 
-            default -> "ERROR";
-        };
+            default -> throw new IllegalArgumentException("Invalid Request");
+        }
+
+        return response;
     }
 
 }
