@@ -14,12 +14,15 @@ public class Client {
     private static final int SERVER_PORT = 41220;
 
     private final Request request;
-    public Client(String type, String key, String value) {
 
-        this.request = new Request(type, key, value);
+    public Client(Request request) {
+        this.request = request;
+    }
+    public Client(String type, String key, String value) {
+        this(new Request(type, key, value));
     }
 
-    public void init() {
+    public void run() {
 
         System.out.println("Client started!");
         try (
